@@ -1,0 +1,19 @@
+
+{
+	"id" : "nodebb-plugin-tickerquote",
+	"name" : "Ticker Quote",
+	"description" : "NodeBB Plugin that allows users to search for a stock ticker and embed a realtime quote",
+	"url" : "https://github.com/CCob/nodebb-plugin-tickerquote",
+	"library" : "./library.js",
+	"hooks" : [
+		{"hook": "filter:parse.post", "method": "onPostParse", "priority": 6},
+		{"hook": "filter:parse.raw", "method": "onPostParseRaw", "priority": 6},
+		{"hook": "filter:meta.getMetaTags", "method" : "getMetaTags"}
+	],
+	"scripts" : [
+		"static/tickerquote.js"
+	],
+	"less" : [
+		"static/tickerquote.less"
+	]
+}
