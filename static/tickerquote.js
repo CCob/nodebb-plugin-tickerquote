@@ -17,6 +17,16 @@
 
 'use strict'
 
+String.prototype.format = String.prototype.f = function() {
+    var s = this,
+        i = arguments.length;
+
+    while (i--) {
+        s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
+    }
+    return s;
+};
+
 $(document).ready(function () {
   $(window).on('composer:autocomplete:init', function (ev, data) {
     var strategy = {
@@ -36,14 +46,35 @@ $(document).ready(function () {
 				callback(['No results']);
 			}
 			
-			var qty = 0;
-			var stocks = [];
-			
-			data.ResultSet.Result.map(function(stock) {
-				stocks.push("<span data-symbol='" + stock.symbol + "'>" + stock.name + " (" + stock.exchDisp +  ")<span>");
-			});
-					
-			callback(stocks);				
+			var limit = 5;	
+			var stocks = [];			
+			data.ResultSet.Result.some(function (stock) {
+				stocks.push(stock.symbol);
+				limit--;
+				if(limit==0)
+					return true;
+			});	
+
+			var stockURI = "http://finance.google.com/finance/info?client=ig&q={0}".format(encodeURI(stocks.join(',')));			
+			var results = ['No results'];
+						
+			$.ajax({
+				url: stockURI,
+				type: 'GET',	
+				dataType: 'jsonp'
+			}).then(function (data){
+				
+				stocks = [];
+				if(data != null && Array.isArray(data)){
+					data.map(function(stock){
+						var stockMarkdown = "$[{0} {1} {2}%]"
+							.format(stock.t,stock.l,stock.cp != null ? stock.cp : 0);
+						stocks.push("<span data-symbol='" + stockMarkdown + "'>" + stock.e + ":" + stock.t + "</span>");					
+					});
+				}
+
+				callback(stocks);
+			});			
 								
 		}, function(data){
 			callback(['No results']);
@@ -54,29 +85,8 @@ $(document).ready(function () {
         if (selected === 'No results') {
           return ''
         }
-		
-        var ele = $.parseHTML(selected);
-        var symbol = $(ele).attr('data-symbol');
-		var result = "";
-		var successFunction = function(data){
-			data = JSON.parse(data.substr(3));
-			result = '$[' + symbol + ' ' + data[0].l + ' ' + data[0].cp + '%]'; 			
-		};
-		
-		$.ajax({
-			url: 'http://finance.google.com/finance/info?client=ig&q=' + symbol,
-			type: 'GET',	
-			async: false,
-			beforeSend: function(xhr){
-			   xhr.withCredentials = true;
-			},
-			success: successFunction,
-			error: function () {
-				result = '$[' + symbol + ' Na Na]'; 
-			}
-		})
-		
-		return result;
+        var ele = $.parseHTML(selected);	
+		return $(ele).attr('data-symbol');	;
       },
       cache: false
     }
