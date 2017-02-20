@@ -23,22 +23,22 @@ var winston = module.parent.require('winston')
 
 var TickerQuote = {}
 var debug
-var	quoteMarkdown = /\B\$\[([a-zA-z]{1,4}\.?[a-zA-Z]{1,2}) ([+-]?\d+([\,]\d+)*([\.]\d+)?) ([+-]?([0-9]*[.])?[0-9]+%)]/g;
+var	quoteMarkdown = /\B\$\[([a-zA-z]{1,4}\.?[a-zA-Z]{1,2}) ([+-]?\d+([\,]\d+)*([\.]\d+)?) ([+-]?([0-9]*[.])?[0-9]+%)]/;
 var quoteHTMLGreen = '<span class="stock-quote"><span class="stock-quote-index">$1:</span><span class="stock-quote-price">$2</span><span class="stock-quote-change-up">$5</span></span>';	
 var quoteHTMLRed = '<span class="stock-quote"><span class="stock-quote-index">$1:</span><span class="stock-quote-price">$2</span><span class="stock-quote-change-down">$5</span></span>';	
 
 
 TickerQuote.replaceMarkdown = function(postData){
 	
-	var captures = quoteMarkdown.exec(postData);
-	if (captures) {			
+	var captures 
+	while(captures = quoteMarkdown.exec(postData)){		
 		if(captures[5][0] == '+' || captures[5][0] != '-')
-			return postData.replace(quoteMarkdown, quoteHTMLGreen);
+			postData = postData.replace(quoteMarkdown, quoteHTMLGreen);
 		else
-			return postData.replace(quoteMarkdown, quoteHTMLRed);
-	}else{
-		return postData;
+			postData = postData.replace(quoteMarkdown, quoteHTMLRed);
 	}
+	
+	return postData;
 }
 
 TickerQuote.onPostParseRaw = function(data, callback){
