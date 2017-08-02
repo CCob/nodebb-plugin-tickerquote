@@ -2,7 +2,7 @@
   "name": "nodebb-plugin-tickerquote",
   "version": "0.0.1",
    "nbbpm": {
-    "compatibility": "^1.1.0"
+    "compatibility": "^1.5.0"
   },
   "description" : "Allows you to embed a real time stock quote by first initiating a search using $ character within the composer and selecting your stock.  Once selected, this is converted to a markdown based quote which will be rendered in HTML once posting.",
   "main" : "library.js",

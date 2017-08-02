@@ -67,7 +67,7 @@ TickerQuote.getMetaTags = function(data, callback){
 		callback(null,data);
 	}
 	
-	data.push({ name: "referrer", content: "no-referrer"});
+	data.tags.push({ name: "referrer", content: "no-referrer"});
 	callback(null,data);	
 }
 
